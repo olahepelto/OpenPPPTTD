@@ -2,8 +2,8 @@
  * CONFIG
  */
 
-var mapWidth = 150;
-var mapHeight = 150;
+var mapWidth = 50;
+var mapHeight = 50;
 var mapScale = 1.0; //Start
 var lastScale = 1.0;
 
@@ -30,7 +30,7 @@ var mapGenWeights = {
     forest: 1.5
 };
 var scrollSpeed = 25;
-var tickLength = 40;
+var tickLength = 20;
 
 var cursor;
 
@@ -40,8 +40,8 @@ var gridContainer;
 
 //Generate/Init the map and all functionality
 function init(){
-    app = new PIXI.Application(screen.width, screen.height, { antialias: true, backgroundColor : 0xA9E09D});
-    document.body.appendChild(app.view);
+    app = new PIXI.Application(screen.width, screen.height-200,{backgroundColor : 0x1099bb});
+    $("#canvas_here").append(app.view);
     var ticker = PIXI.ticker.shared;
     ticker.autoStart = false;
     ticker.stop();
@@ -112,6 +112,9 @@ function init(){
 
         cursor.x = Math.round(e.pageX/(25*mapScale) - 0.5)*25*mapScale;
         cursor.y = Math.round(e.pageY/(25*mapScale) - 0.5)*25*mapScale;
+
+        cursor.width = 25*mapScale
+        cursor.height = 25*mapScale
     });
 }
 function initContainers(){
@@ -130,9 +133,7 @@ function drawMap(){
     for (var i = mapHeight - 1; i >= 0; i--) {
         for (var j = mapWidth - 1; j >= 0; j--) {
             var tile = map.map[j][i]
-            if (tile !== 0) {
-                drawTile(tile, j, i)
-            }
+            drawTile(tile, j, i)
         }
     }
     map.xOffset = 0
@@ -196,31 +197,41 @@ function gameCordToScrCord(gameX,gameY){
 
 
 //Draw one tile
-function drawTile(tile, x, y){
-          if(tile === 1){color = "0xFFE699"; tileShort = "CTY"
-    }else if(tile === 2){color = "0x757171"; tileShort = "CM"
-    }else if(tile === 3){color = "0xD0CECE"; tileShort = "IM"
-    }else if(tile === 4){color = "0xA6A6A6"; tileShort = "STM"
-    }else if(tile === 5){color = "0x8EA9DB"; tileShort = "PST"
-    }else if(tile === 6){color = "0xF4B084"; tileShort = "FAC"
-    }else if(tile === 7){color = "0x4472C4"; tileShort = "OIL"
-    }else if(tile === 8){color = "0xC65911"; tileShort = "REF"
-    }else if(tile === 9){color = "0x548235"; tileShort = "FOR"
-    }else{               color = "0xFFFFFF"; tileShort = "ERR2"}
+function drawTile(tile, x, y) {
+          if(tile === 0){sprite = sprites.grass;  tileShort = "NOTHING"
+    }else if(tile === 1){sprite = sprites.city; tileShort = "CTY"
+    }else if(tile === 2){sprite = sprites.coalmine; tileShort = "CM"
+    }else if(tile === 3){sprite = sprites.ironmine; tileShort = "IM"
+    }else if(tile === 4){sprite = sprites.steelmill; tileShort = "STM"
+    }else if(tile === 5){sprite = sprites.powerstation; tileShort = "PST"
+    }else if(tile === 6){sprite = sprites.factory; tileShort = "FAC"
+    }else if(tile === 7){sprite = sprites.oilwell; tileShort = "OIL"
+    }else if(tile === 8){sprite = sprites.refinery; tileShort = "REF"
+    }else if(tile === 9){sprite = sprites.forest; tileShort = "FOR"
+    }else{               sprite = sprites.error;  tileShort = "ERR"}
 
     drawCords = gameCordToScrCord(x,y);
-    var square = new PIXI.Graphics();
-    square.beginFill(color, 1);
-    square.drawRect(drawCords[0], drawCords[1], 25*mapScale, 25*mapScale);
 
-    var basicText = new PIXI.Text(tileShort, {fontFamily : 'Arial', fontSize: 12*mapScale, fill : 0x000000, align : 'center', fontWeight : 'bold'});
-    basicText.x = drawCords[0];
-    basicText.y = drawCords[1];
-
+    //square.drawRect(], 25 * mapScale, 25 * mapScale);
+    var square = new PIXI.Sprite(sprite);
+    square.x = drawCords[0];
+    square.y = drawCords[1];
     map.mapTiles[x][y] = square;
-    map.mapText[x][y] = basicText;
     squareContainer.addChild(square);
-    textContainer.addChild(basicText);
+
+    if(tile !== 0) {
+        var basicText = new PIXI.Text(tileShort, {
+            fontFamily: 'Arial',
+            fontSize: 12 * mapScale,
+            fill: 0xFFFFFF,
+            align: 'center',
+            fontWeight: 'bold'
+        });
+        basicText.x = drawCords[0];
+        basicText.y = drawCords[1];
+        map.mapText[x][y] = basicText;
+        textContainer.addChild(basicText);
+    }
 }
 function drawTrain(){
 
@@ -250,6 +261,8 @@ function tick(){
 
 function moveMap(direction){
     if(direction === "Scale"){
+        cursor.width = 0
+        cursor.height = 0
         map.xOffset = 0;
         map.yOffset = 0;
 
@@ -401,3 +414,16 @@ var map = {
         }
     }
 };
+var sprites = {
+    grass: PIXI.Texture.fromImage('sprites/grass.png'),
+    city: PIXI.Texture.fromImage('sprites/city.png'),
+    coalmine: PIXI.Texture.fromImage('sprites/coalmine.png'),
+    ironmine: PIXI.Texture.fromImage('sprites/ironmine.png'),
+    steelmill: PIXI.Texture.fromImage('sprites/steelmill.png'),
+    powerstation: PIXI.Texture.fromImage('sprites/powerstation.png'),
+    factory: PIXI.Texture.fromImage('sprites/factory.png'),
+    oilwell: PIXI.Texture.fromImage('sprites/oilwell.png'),
+    refinery: PIXI.Texture.fromImage('sprites/refinery.png'),
+    forest: PIXI.Texture.fromImage('sprites/forest.png'),
+    error: PIXI.Texture.fromImage('sprites/error.png')
+}
