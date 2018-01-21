@@ -1,5 +1,6 @@
 # OpenPPPTTD #
 
+This is just me learning a new framework.
 
 *LICENSE*
 
