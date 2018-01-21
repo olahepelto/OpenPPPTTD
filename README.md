@@ -1,7 +1,5 @@
 # OpenPPPTTD #
 
-Try at tetrium.tk/traingame/
-
 
 *LICENSE*
 
