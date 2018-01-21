@@ -1,6 +1,6 @@
 # OpenPPPTTD #
 
-This is just me learning a new framework.
+This is just me learning pixi.js canvas framework.
 
 *LICENSE*
 
