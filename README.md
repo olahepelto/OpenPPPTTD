@@ -1,6 +1,8 @@
 # OpenPPPTTD #
 
-This is just me learning pixi.js canvas framework.
+Simple procedural generation for a pen and paper game.
+
+Made using raw JS, JQuery and pixi.js
 
 *LICENSE*
 
